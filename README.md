@@ -160,6 +160,14 @@ CUDA_VISIBLE_DEVICES=0 python3 tools/dynamic_eval.py --track work_dirs/waymo_cen
 
 ### Visualization
 
+```shell
+python vis_ptcld.py --infos waymo/infos_val_02sweeps_filter_zero_gt.pkl --lidar waymo/seq_0_frame_0/lidar.pkl --annos waymo/seq_0_frame_0/annos.pkl --pred1 waymo/prediction.pkl --pred2 waymo/one_box_est.pkl --token seq_0_frame_0.pkl
+```
+
+![vis_1](figure/vis_1.png)
+
+![vis_2](figure/vis_2.png)
+
 ### Acknowledgement
 
 - [CenterPoint](https://github.com/tianweiy/CenterPoint)
