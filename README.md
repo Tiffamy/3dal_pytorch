@@ -92,8 +92,8 @@ python tools/create_data.py waymo_data_prep --root_path=data/Waymo --split test 
 
 ```
 3dal_pytorch
-	└── data
-		└── Waymo
+  └── data
+    └── Waymo
       ├── tfrecord_training
       ├── tfrecord_validation
       ├── train <-- all training frames and annotations
