@@ -1,8 +1,0 @@
-2022-03-24 10:32:24,694   INFO  Load track data
-2022-03-24 10:32:37,649   INFO  Load info data
-2022-03-24 10:33:01,592   INFO  Load model from work_dirs/waymo_centerpoint_voxelnet_two_sweep_two_stage_bev_5point_ft_6epoch_freeze_with_vel/train/static/model/two_box_est/acc0.734144_best.pth
-2022-03-24 10:33:04,869   INFO  Start testing
-2022-03-24 10:35:02,970   INFO  Start post processing
-2022-03-24 11:01:41,447   INFO  Saving results to work_dirs/waymo_centerpoint_voxelnet_two_sweep_two_stage_bev_5point_ft_6epoch_freeze_with_vel/val/static/two_box_est.pkl
-2022-03-24 11:01:50,032   INFO  [Eval] Box IoU (2D/3D): 0.8206/0.7398
-2022-03-24 11:01:50,032   INFO  [Eval] Box estimation accuracy: 0.7426

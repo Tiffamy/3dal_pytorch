@@ -44,9 +44,10 @@ def main():
     args = parser.parse_args()
 
     print(f'[{bcolors.OKBLUE}Info{bcolors.ENDC}] Load track data')
+    
     with open(args.track, 'rb') as f:
         track = pickle.load(f)
-
+    
     print(f'[{bcolors.OKBLUE}Info{bcolors.ENDC}] Load infos data')
     with open(args.infos, 'rb') as f:
         infos = pickle.load(f)
@@ -57,6 +58,7 @@ def main():
         static = pickle.load(f)
     
     iou_track, iou_static = [], []
+    # print(static.keys())
     for ID, obj in tqdm(static.items()):
         token = obj['token']
         static_bbox = obj['bbox']
@@ -72,14 +74,15 @@ def main():
         bboxs = np.array([anno['box'] for anno in annos['objects']])
         bboxs = bboxs[:, [0, 1, 2, 3, 4, 5, -1]]
         bboxs_t = torch.tensor(bboxs).float().cuda()
-
+        
+        
         track_bbox = torch.tensor(track_bbox).float().cuda()
         track_iou = boxes_iou3d_gpu(track_bbox, bboxs_t)
         track_iou = track_iou.cpu().data.numpy().squeeze(axis=0)
         track_idx = np.argmax(track_iou)
         track_iou = np.max(track_iou)
         iou_track.append(track_iou)
-
+        
         static_bbox = torch.tensor(static_bbox).float().cuda()
         static_iou = boxes_iou3d_gpu(static_bbox, bboxs_t)
         static_iou = static_iou.cpu().data.numpy().squeeze(axis=0)

@@ -25,9 +25,11 @@ MEAN_SIZE_ARR = np.array([
 
 def preprocessing(track, infos):
     del_keys = []
+
     for k, v in track.items():
         score = np.stack(v['score'])
         token = v['token'][np.argmax(score)]
+            
         with open(infos[token]['anno_path'], 'rb') as f:
             annos = pickle.load(f)
 

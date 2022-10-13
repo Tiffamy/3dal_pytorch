@@ -117,7 +117,7 @@ def main():
     else:
         print("Use Val Set")
         dataset = build_dataset(cfg.data.val)
-
+    
     data_loader = build_dataloader(
         dataset,
         batch_size=cfg.data.samples_per_gpu if not args.speed_test else 1,
@@ -203,7 +203,10 @@ def main():
         os.makedirs(args.work_dir)
 
     save_pred(predictions, args.work_dir)
-
+    '''
+    with open('./work_dirs/test/val/prediction.pkl', 'rb') as f:
+        predictions = pickle.load(f)
+    '''
     result_dict, _ = dataset.evaluation(copy.deepcopy(predictions), output_dir=args.work_dir, testset=args.testset)
 
     if result_dict is not None:

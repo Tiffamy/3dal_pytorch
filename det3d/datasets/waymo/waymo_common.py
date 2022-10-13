@@ -198,14 +198,14 @@ def _create_pd_detection(detections, infos, result_path, tracking=False):
         trackData[token]['point'] = trackData_point
         trackData[token]['match'] = trackData_match
 
-    with open('/tmp2/jacky1212/det_annos.pkl', 'wb') as f:
+    with open('./work_dirs/test/val/det_annos.pkl', 'wb') as f:
         pickle.dump(det_annos, f)
     trackData_list = list(trackData.items())
     trackData_one = dict(trackData_list[:len(trackData_list) // 2])
     trackData_two = dict(trackData_list[len(trackData_list) // 2:])
-    with open('/tmp2/jacky1212/trackData_one.pkl', 'wb') as f:
+    with open('./work_dirs/test/val/trackData_one.pkl', 'wb') as f:
         pickle.dump(trackData_one, f)
-    with open('/tmp2/jacky1212/trackData_two.pkl', 'wb') as f:
+    with open('./work_dirs/test/val/trackData_two.pkl', 'wb') as f:
         pickle.dump(trackData_two, f)
     
     # Write objects to a file.

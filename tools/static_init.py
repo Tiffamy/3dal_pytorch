@@ -61,7 +61,7 @@ def calculate_init_iou(track, infos):
     init_iou3d_acc = 0.0
 
     n_samples = 0
-    n_vehicle, n_cyclist = 0, 0
+    n_vehicle, n_pedestrian, n_cyclist = 0, 0, 0
     for i, (key, value) in enumerate(tqdm(track.items())):
         bbox = np.vstack(value['bbox'])
         types = np.stack(value['type'])
@@ -123,10 +123,13 @@ def calculate_init_iou(track, infos):
             init_iou2d += np.sum(iou2ds)
             init_iou3d += np.sum(iou3ds)
             
-            assert types[j] in [1, 4], 'Unknown type.'
+            assert types[j] in [1, 2, 4], 'Unknown type.'
             if types[j] == 1:
                 init_iou3d_acc += np.sum(iou3ds >= 0.7)
                 n_vehicle += 1
+            elif types[j] == 2:
+                init_iou3d_acc += np.sum(iou3ds >= 0.7)
+                n_pedestrian += 1
             elif types[j] == 4:
                 init_iou3d_acc += np.sum(iou3ds >= 0.5)
                 n_cyclist += 1
@@ -135,7 +138,7 @@ def calculate_init_iou(track, infos):
     init_iou3d /= n_samples
     init_iou3d_acc /= n_samples
 
-    print(f'[Init] #Vehicle: {n_vehicle}, #Cyclist: {n_cyclist}')
+    print(f'[Init] #Vehicle: {n_vehicle}, #Pedestrian: {n_pedestrian}, #Cyclist: {n_cyclist}')
     print(f'[Init] Box IoU (2D/3D): {init_iou2d:.4f}/{init_iou3d:.4f}')
     print(f'[Init] Box estimation accuracy: {init_iou3d_acc:.4f}')
     return init_iou2d, init_iou3d, init_iou3d_acc
@@ -282,7 +285,7 @@ def main():
     calculate_init_iou(track, infos)
     result_dir = pathlib.Path(args.track).parent / 'static'
     result_path = result_dir / 'static.pkl'
-    calculate_static_iou(track, infos, token2idx, det_annos, result_path)
+    #calculate_static_iou(track, infos, token2idx, det_annos, result_path)
 
 if __name__ == '__main__':
     main()
