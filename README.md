@@ -109,60 +109,75 @@ python tools/create_data.py waymo_data_prep --root_path=data/Waymo --split test 
 #### 1. 3D object detection
 
 ```shell
-python tools/dist_test.py configs/waymo/voxelnet/two_stage/waymo_centerpoint_voxelnet_two_sweep_two_stage_bev_5point_ft_6epoch_freeze_with_vel.py --work_dir work_dirs/waymo_centerpoint_voxelnet_two_sweep_two_stage_bev_5point_ft_6epoch_freeze_with_vel/val --checkpoint work_dirs/waymo_centerpoint_voxelnet_two_sweep_two_stage_bev_5point_ft_6epoch_freeze_with_vel/epoch_6.pth --speed_test
+python tools/dist_test.py configs/waymo/voxelnet/two_stage/waymo_centerpoint_voxelnet_two_sweep_two_stage_bev_5point_ft_6epoch_freeze_with_vel.py --work_dir work_dirs/${work_dir}/[train, val] --checkpoint work_dirs/${work_dir}/epoch_6.pth --speed_test
 ```
 
 #### 2. 3D multi-object tracking
 
 ```shell
-python3 tools/waymo_tracking/test.py --work_dir work_dirs/waymo_centerpoint_voxelnet_two_sweep_two_stage_bev_5point_ft_6epoch_freeze_with_vel/val --checkpoint work_dirs/waymo_centerpoint_voxelnet_two_sweep_two_stage_bev_5point_ft_6epoch_freeze_with_vel/val/prediction.pkl --info_path data/Waymo/infos_val_02sweeps_filter_zero_gt.pkl
+python3 tools/waymo_tracking/test.py --work_dir work_dirs/${work_dir}/[train, val] --checkpoint work_dirs/${work_dir}/[train, val]/prediction.pkl --info_path data/Waymo/infos_[train, val]_02sweeps_filter_zero_gt.pkl
 ```
 
 #### 3. Object track data extraction
 
 ```shell
-python3 tools/trackData.py --track work_dirs/waymo_centerpoint_voxelnet_two_sweep_two_stage_bev_5point_ft_6epoch_freeze_with_vel/val/trackData.pkl --result work_dirs/waymo_centerpoint_voxelnet_two_sweep_two_stage_bev_5point_ft_6epoch_freeze_with_vel/val/track.pkl
+python3 tools/trackData.py --work_dir work_dirs/${work_dir}/[train, val]
+```
+#### 4 Get tracking groundtruth
+```shell
+python3 tools/trackGT.py --infos data/Waymo/infos_[train, val]_02sweeps_filter_zero_gt.pkl --result work_dirs/${work_dir}/[train, val]/trackGT.pkl
 ```
 
-#### 4. Motion state classification
+#### 5. Motion state classification
 
 ```shell
-python3 tools/motionState.py --track_train work_dirs/waymo_centerpoint_voxelnet_two_sweep_two_stage_bev_5point_ft_6epoch_freeze_with_vel/train/track.pkl --track_val work_dirs/waymo_centerpoint_voxelnet_two_sweep_two_stage_bev_5point_ft_6epoch_freeze_with_vel/val/track.pkl --trackGT_train work_dirs/waymo_centerpoint_voxelnet_two_sweep_two_stage_bev_5point_ft_6epoch_freeze_with_vel/train/trackGT.pkl --trackGT_val work_dirs/waymo_centerpoint_voxelnet_two_sweep_two_stage_bev_5point_ft_6epoch_freeze_with_vel/val/trackGT.pkl
+python3 tools/motionState.py --track_train work_dirs/${work_dir}/train --track_val work_dirs/${work_dir}/val
 ```
 
-#### 5. Static object auto-labeling
+#### 6. Static object auto-labeling
 
 ##### Train
 
 ```shell
-CUDA_VISIBLE_DEVICES=0 python3 tools/static_train.py --track work_dirs/waymo_centerpoint_voxelnet_two_sweep_two_stage_bev_5point_ft_6epoch_freeze_with_vel/train/trackStatic.pkl --infos data/Waymo/infos_train_02sweeps_filter_zero_gt.pkl --model_type one_box_est
+python3 tools/static_train.py --track work_dirs/${work_dir}/train/trackStatic.pkl --infos data/Waymo/infos_train_02sweeps_filter_zero_gt.pkl --model_type two_box_est
 ```
 
 ##### Evaluation
-
+###### Performance before training
 ```shell
-CUDA_VISIBLE_DEVICES=0 python3 tools/static_eval.py --track work_dirs/waymo_centerpoint_voxelnet_two_sweep_two_stage_bev_5point_ft_6epoch_freeze_with_vel/val/trackStatic.pkl --infos data/Waymo/infos_val_02sweeps_filter_zero_gt.pkl --model_path work_dirs/waymo_centerpoint_voxelnet_two_sweep_two_stage_bev_5point_ft_6epoch_freeze_with_vel/train/static/model/one_box_est/acc0.856392_best.pth --model_type one_box_est --det_annos work_dirs/waymo_centerpoint_voxelnet_two_sweep_two_stage_bev_5point_ft_6epoch_freeze_with_vel/val/det_annos.pkl
+python3 tools/static_init.py --track work_dirs/${work_dir}/val/trackStatic.pkl --infos data/Waymo/infos_val_02sweeps_filter_zero_gt.pkl --det_annos work_dirs/${work_dir}/val/det_annos.pkl
 ```
+###### Performance after training
+```shell
+python3 tools/static_eval.py --track work_dirs/${work_dir}/val/trackStatic.pkl --infos data/Waymo/infos_val_02sweeps_filter_zero_gt.pkl --model_path work_dirs/${work_dir}/train/static/model/one_box_est/acc0.856392_best.pth --model_type one_box_est --det_annos work_dirs/${work_dir}/val/det_annos.pkl
+```
+This will also output the 2D/3D IoU and 3D Acc@0.7 metrics
 
-#### 6. Dynamic object auto-labeling
+#### 7. Dynamic object auto-labeling
 
 ##### Train
 
 ```shell
-CUDA_VISIBLE_DEVICES=0 python3 tools/dynamic_train.py --track work_dirs/waymo_centerpoint_voxelnet_two_sweep_two_stage_bev_5point_ft_6epoch_freeze_with_vel/train/trackDynamic.pkl --infos data/Waymo/infos_train_02sweeps_filter_zero_gt.pkl --model_type one_box_est
+python3 tools/dynamic_train.py --track work_dirs/${work_dir}/train/trackDynamic.pkl --infos data/Waymo/infos_train_02sweeps_filter_zero_gt.pkl
 ```
 
 ##### Evaluation
-
+###### Performance before training
 ```shell
-CUDA_VISIBLE_DEVICES=0 python3 tools/dynamic_eval.py --track work_dirs/waymo_centerpoint_voxelnet_two_sweep_two_stage_bev_5point_ft_6epoch_freeze_with_vel/val/trackDynamic.pkl --infos data/Waymo/infos_val_02sweeps_filter_zero_gt.pkl --model_path work_dirs/waymo_centerpoint_voxelnet_two_sweep_two_stage_bev_5point_ft_6epoch_freeze_with_vel/train/dynamic/model/acc0.856392_best.pth --model_type one_box_est --det_annos work_dirs/waymo_centerpoint_voxelnet_two_sweep_two_stage_bev_5point_ft_6epoch_freeze_with_vel/val/det_annos.pkl
+python3 tools/dynamic_init.py --track work_dirs/${work_dir}/val/trackDynamic.pkl --infos data/Waymo/infos_val_02sweeps_filter_zero_gt.pkl
 ```
+###### Performance after training
+```shell
+python3 tools/dynamic_eval.py --track work_dirs/${work_dir}/val/trackDynamic.pkl --infos data/Waymo/infos_val_02sweeps_filter_zero_gt.pkl --model_path work_dirs/${work_dir}/train/dynamic/model/acc0.856392_best.pth --model_type one_box_est --det_annos work_dirs/${work_dir}/val/det_annos.pkl
+```
+This will also output the 2D/3D IoU and 3D Acc@0.7 metrics
 
 ### Visualization
 
 ```shell
 python vis_ptcld.py --infos waymo/infos_val_02sweeps_filter_zero_gt.pkl --lidar waymo/seq_0_frame_0/lidar.pkl --annos waymo/seq_0_frame_0/annos.pkl --pred1 waymo/prediction.pkl --pred2 waymo/one_box_est.pkl --token seq_0_frame_0.pkl
 ```
+**Still not working now**
 
 > Red: groundtruth | Green: w/o temporal | Yellow: w/ temporal
 
