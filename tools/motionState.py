@@ -112,17 +112,16 @@ def main():
     del static_thr
     gc.collect()
     '''
-    static = list(static.items())
     with (open(os.path.join(args.track_train, 'trackStatic.pkl'), 'wb')) as f:
-        pickle.dump(static)
+        pickle.dump(dict(static_list))
     del static
     gc.collect()
     
     print(f'{bcolors.OKCYAN}>{bcolors.ENDC} Saving train/trackDynamic.pkl')
     
-    dynamic = list(dynamic.items())
+    dynamic_list = list(dynamic.items())
     with (open(os.path.join(args.track_train, 'trackDynamic.pkl'), 'wb')) as f:
-        pickle.dump(dynamic)
+        pickle.dump(dict(dynamic_list))
     del dynamic
     gc.collect()
     
